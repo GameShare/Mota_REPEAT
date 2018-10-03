@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mota_Repeat</title>
+
+    <script src='./lib/util.js'></script>
+
+    <script src='data.js'></script>
+    <script src='./app/player.js'></script>
+    <script src='./app/map.js'></script>
+    <script src='./app/ui.js'></script>
+    <script src='./app/enemy.js'></script>
+    <script src='./app/motaEvent.js'></script>
+
+    <script src='app.js'></script>
+    
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        table{border-collapse:collapse;margin: 0 auto 0 auto;border: 5px solid rgb(119,68,34);float: right;}
+        td{width: 32px;height:32px;font-size: 10px;text-align: center;
+            /*background: url("images/Characters/Event01-Wall02.png") -64px 0 no-repeat;*/
+            }
+    
+        #saying, #buying{
+            width: 270px;
+            height: 170px;
+            background-color: #38a2ec;
+            opacity: 0.8;
+            position: absolute;
+            left: 225px;
+            top:90px;
+            padding: 20px;
+    
+            font-family: 微软雅黑;
+            font-size: 14px;
+    
+            visibility: hidden;
+        }
+    
+    
+        #noMoney{
+            text-indent: 1em;
+            font-size: 24px;
+            line-height: 45px;
+        }
+    
+        #buyingNoMoney{
+            color: green;
+            font-size: 30px;
+        }
+    
+        #buyingMoney{
+            color: green;
+            font-size: 20px;
+        }
+    
+        .buyingList{
+            width: 230px;
+            margin:8px 0 5px 17px;
+            padding: 3px;
+            background-color: #1487d8;
+            cursor: pointer;
+        }
+    
+        .buyingList:hover{
+            background-color: #14d855;
+        }
+    
+        #words,#buyingIntro{
+            text-indent:2em;
+        }
+    
+        #saying-continue,#buying-continue{
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+        }
+    
+        #gameDiv{
+            height: 360px;
+            width: 600px;
+            border: 2px solid red;
+        }
+    
+        #baseMessage{
+            height: 360px;
+            width: 200px;
+            float: left
+        }
+    
+        #gameTable{
+            height: 360px;
+            width: 358px;
+            float: left;
+        }
+    
+    
+        #enemyDetail{
+            height: 300px;
+            width: 300px;
+            position: absolute;
+            top: 30px;
+            left: 230px;
+            background-color: grey;
+            opacity: 0.9;
+            display: none;
+        }
+    
+        #enemyDetail h1{
+            display: table;
+            margin: 15px auto 5px auto;
+            font-size: 20px;
+        }
+    
+        #enemyDetail p{
+            position: absolute;
+            right: 20px;
+            bottom: 10px;
+        }
+        #enemyDetail ul{
+            height: 200px
+        }
+        #enemyDetail li:first-child{
+            border-top: 1px solid #fff;
+        }
+        #enemyDetail li{
+            height: 40px;
+            display: block;
+            position: relative;
+            border-bottom: 1px solid #fff;
+        }
+        #enemyDetail li .images{
+            width: 32px;
+            height: 32px;
+            background: url("images/Characters/Monster06-01.png") -32px 0px no-repeat, url("images/Characters/Other09.png") 0px 0px no-repeat;
+            position: absolute;
+            top:2px;
+            left: 10px;
+        }
+        #enemyDetail li p.name{
+            font-size: 14px;
+            color: green;
+            position: absolute;
+            left: 60px;
+            top: 0px;
+        }
+        #enemyDetail li p.damege{
+            font-size: 12px;
+            color: red;
+            font-weight: bold;
+            position: absolute;
+            left: 160px;
+            top: 0px;
+        }
+        #enemyDetail li p.detail{
+            font-size: 12px;
+            position: absolute;
+            color: blue;
+            left: 60px;
+            top: 20px;
+            width: 240px;
+        }
+        #enemyDetail li span{
+            width: 28px;
+            text-align: center;
+            color: #ffffff;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div id='gameDiv'>
+        <div id="baseMessage">
+            <p>黄钥匙:<span id="yellowKey"></span></p>
+            <p>蓝钥匙:<span id="blueKey"></span></p>
+            <p>红钥匙:<span id="redKey"></span></p>
+            <p>体力值:<span id="plLife"></span></p>
+            <p>攻击:<span id="plAttack"></span></p>
+            <p>防御:<span id="plGuard"></span></p>
+            <p>金币:<span id="plGold"></span></p>
+            <br>
+            <p>敌名称:<span id="enName"></span></p>
+            <p>敌体力值:<span id="enLife"></span></p>
+            <p>敌攻击:<span id="enAttack"></span></p>
+            <p>敌防御:<span id="enGuard"></span></p>
+            <br>
+            <p>信息栏：<span id="message"></span></p>
+        </div>
+        <div id="gameTable">
+            
+        </div>
+
+        <div id="saying">
+            <p id="words">孩子，继续努力啊！孩子，继续努力啊！孩子，继续努力啊！孩子，继续努力啊！孩子，继续努力啊！孩子，继续努力啊！</p>
+            <p id="saying-continue">请按任意键继续</p>
+        </div>
+
+        <div id="buying">
+            <p id="buyingIntro">欢迎来到奸商商店！！你只需要 <span id = "buyingMoney">20</span> 金币就可以买到称心如意的商品！</p>
+            <p class="buyingList" id="buyLife">1、购买 <span id="lifeNum">400</span> 点体力值</p>
+            <p class="buyingList" id="buyAttack">2、购买 <span id="attackNum">2</span> 点攻击</p>
+            <p class="buyingList" id="buyGuard">3、购买 <span id="guardNum">4</span> 点防御</p>
+            <p class="buyingList" id="buyNone">4、嗯。。我再考虑考虑</p>
+            <p id="noMoney">你的金币不足 <span id = "buyingNoMoney">20</span> 枚。你别想从我这里获得任何东西！</p>
+            <p id="buying-continue">请按任意键继续</p>
+        </div>
+    </div>
+
+    <div id="enemyDetail">
+        <h1>怪物信息</h1>
+        <ul id="enemyUl">
+            <li>
+                <p class="name">初级法师</p>
+                <p class="damege">损失 100 点生命</p>
+                <p class="detail"> 生命 <span>300</span> 攻击 <span>20</span> 防御 <span>20</span> 金币 <span>300</span></p>
+                <div class="images"></div>
+            </li>
+            <li>
+                <p class="name">初级法师</p>
+                <p class="damege">损失 100 点生命</p>
+                <p class="detail"> 生命 <span>300</span> 攻击 <span>20</span> 防御 <span>20</span> 金币 <span>300</span></p>
+                <div class="images"></div>
+            </li>
+            <li>
+                <p class="name">初级法师</p>
+                <p class="damege">损失 100 点生命</p>
+                <p class="detail"> 生命 <span>300</span> 攻击 <span>20</span> 防御 <span>20</span> 金币 <span>300</span></p>
+                <div class="images"></div>
+            </li>
+            <li>
+                <p class="name">初级法师</p>
+                <p class="damege">损失 100 点生命</p>
+                <p class="detail"> 生命 <span>300</span> 攻击 <span>20</span> 防御 <span>20</span> 金币 <span>300</span></p>
+                <div class="images"></div>
+            </li>
+            <li>
+                <p class="name">初级法师</p>
+                <p class="damege">损失 100 点生命</p>
+                <p class="detail"> 生命 <span>300</span> 攻击 <span>20</span> 防御 <span>20</span> 金币 <span>300</span></p>
+                <div class="images"></div>
+            </li>
+        </ul>
+        <p>按"H"键返回游戏</p>
+    </div>
+</body>
+</html>
